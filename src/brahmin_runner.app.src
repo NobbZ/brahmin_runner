@@ -1,0 +1,15 @@
+{application, brahmin_runner,
+ [{description, "Tool to run and check participating programs for FHW programming contest, summer 2016"},
+  {vsn, "0.0.1"},
+  {registered, []},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, [brahmin_runner]},
+
+  {maintainers, []},
+  {licenses, []},
+  {links, []}
+ ]}.
