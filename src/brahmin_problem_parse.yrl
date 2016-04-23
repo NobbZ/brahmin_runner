@@ -47,8 +47,12 @@ parse_string(String) when is_binary(String) ->
 parse_string(String) when is_list(String) ->
     FirstLines = get_first_lines(String, 3),
     {ok, Tokens, _} = brahmin_problem_scan:string(FirstLines),
-    {ok, Parsed} = parse(Tokens),
-    Parsed.
+    case parse(Tokens) of
+        {ok, Parsed} ->
+            {ok, Parsed};
+        {error, {Line, _, Message}}Other ->
+            {error, Line, Message}
+    end.
 
 get_first_lines(Input, Count) ->
     get_first_lines(Input, Count, []).
