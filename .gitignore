@@ -1,16 +1,34 @@
-.rebar3
 _*
+
+# log files
+log
+logs
+erl_crash.dump
+
+# dialyzer artifacts
+*.plt
+
+# Rebar artifacts
+_build
+.rebar
+ebin
+.rebar3
+
+# beam artifacts
+*.beam
+
+# other artifacts
 .eunit
 *.o
-*.beam
-*.plt
 *.swp
 *.swo
+
+# Generated source files
+src/*_parse.erl
+src/*_scan.erl
+
+# secrets!
 .erlang.cookie
-ebin
-log
-erl_crash.dump
-.rebar
-logs
-_build
+
+# Generated binaries
 brahmin_runner
