@@ -38,5 +38,26 @@ Erlang code.
 -include("rectangle.hrl").
 -include("exercise.hrl").
 
+-export([parse_string/1]).
+
 extract({_Token, _Pos, Value}) -> Value.
 
+parse_string(String) when is_binary(String) ->
+    parse_string(binary_to_list(String));
+parse_string(String) when is_list(String) ->
+    FirstLines = get_first_lines(String, 3),
+    {ok, Tokens, _} = brahmin_problem_scan:string(FirstLines),
+    {ok, Parsed} = parse(Tokens),
+    Parsed.
+
+get_first_lines(Input, Count) ->
+    get_first_lines(Input, Count, []).
+
+get_first_lines([], _, Acc) ->
+    lists:reverse(acc);
+get_first_lines(_, 0, Acc) ->
+    lists:reverse(Acc);
+get_first_lines([$\n|T], Count, Acc) ->
+    get_first_lines(T, Count - 1, [$\n|Acc]);
+get_first_lines([H|T], Count, Acc) ->
+    get_first_lines(T, Count, [H|Acc]).
