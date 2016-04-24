@@ -40,6 +40,8 @@ Erlang code.
 
 -export([parse_string/1]).
 
+-ignore_xref([format_error/1, parse_and_scan/1, parse/1]).
+
 extract({_Token, _Pos, Value}) -> Value.
 
 parse_string(String) when is_binary(String) ->
