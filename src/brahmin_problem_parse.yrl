@@ -50,7 +50,7 @@ parse_string(String) when is_list(String) ->
     case parse(Tokens) of
         {ok, Parsed} ->
             {ok, Parsed};
-        {error, {Line, _, Message}}Other ->
+        {error, {Line, _, Message}} ->
             {error, Line, Message}
     end.
 
@@ -58,7 +58,7 @@ get_first_lines(Input, Count) ->
     get_first_lines(Input, Count, []).
 
 get_first_lines([], _, Acc) ->
-    lists:reverse(acc);
+    lists:reverse(Acc);
 get_first_lines(_, 0, Acc) ->
     lists:reverse(Acc);
 get_first_lines([$\n|T], Count, Acc) ->
