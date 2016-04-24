@@ -1,8 +1,18 @@
 WATCHES=src include $(wildcard rebar.*)
 
+SHELL=bash
+
 .PHONY: all lint test brahmin_runner _build/default/bin/brahmin_runner
 
 all: lint test brahmin_runner
+
+clean:
+	rm -rfv _build/{default,dev,test}/lib/brahmin_runner
+	rm -rfv _build/{default,dev,test}/bin/brahmin_runner
+
+dist-clean: clean
+	rm -rfv _build
+	rm -rfv brahmin_runner
 
 lint:
 	REBAR_PROFILE=dev rebar3 dialyzer
