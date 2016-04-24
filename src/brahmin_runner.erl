@@ -28,10 +28,10 @@ main([TimeStr, ProblemName]) ->
                   {ok, P} -> binary_to_list(P);
                   {error, _} -> do_error(file_error)
               end,
-    case problem:check(Problem) of
-        ok -> ok;
-        error -> do_error(invalid_problem)
-    end;
+    ParsedProblem = case problem:check(Problem) of
+                        {ok, Value} -> Value;
+                        error -> do_error(invalid_problem)
+                    end;
 main(Args) ->
     io:format("Args: ~p~n", [Args]),
     erlang:halt(0).
