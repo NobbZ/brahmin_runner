@@ -7,7 +7,7 @@ check(Problem) when is_list(Problem); is_binary(Problem) ->
         {ok, Parsed} ->
             {ok, Parsed};
         {error, Line, Message} ->
-            io:format("Error on line ~s: ~s~n~n", [color:blueb(Line), color:yellow(Message)]),
+            io:format("Error on line ~s: ~s~n~n", [color:blueb(io_lib:format("~B", [Line])), color:yellow(Message)]),
             error
     end;
 check(_) ->
