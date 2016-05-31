@@ -64,12 +64,23 @@ get_error_info(file_error)   -> {"File error", 3};
 get_error_info(invalid_problem) -> {"There are errors in the problem description", 4}.
 
 print_help() ->
+    io:format("~s: run a problem~n", [color:yellowb("OPTION A")]),
+    io:format("~s~n", [color:yellow("========")]),
     io:format("./~s <~s> <~s>~n~n", [color:cyanb("brahmin_runner"),
                                      color:blue("time"),
                                      color:blue("problem")]),
     io:format("~s~n~n", [color:blueb("Arguments:")]),
     io:format("  <~s>   : Time in the seconds the program is allowed to run~n", [color:blue("time")]),
     io:format("  <~s>: The name of the problem to run~n~n", [color:blue("problem")]),
+    io:format("The <~s> is loaded from subfolder \"problems\", extension has to be \".prb\".~n", [color:blue("problem")]),
+
+    io:format("~n~n~s: validate a problem~n", [color:yellowb("OPTION B")]),
+    io:format("~s~n", [color:yellow("========")]),
+    io:format("./~s ~s <~s>~n~n", [color:cyanb("brahmin_runner"),
+                                   color:cyan("validate"),
+                                   color:blue("problem")]),
+    io:format("~s~n~n", [color:blueb("Argument:")]),
+    io:format("  <~s>: The name of the problem to validate~n~n", [color:blue("problem")]),
     io:format("The <~s> is loaded from subfolder \"problems\", extension has to be \".prb\".~n", [color:blue("problem")]).
 
 %% Local Variables:
