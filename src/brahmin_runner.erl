@@ -24,7 +24,7 @@ main(["validate", ProblemName]) ->
                    erlang:halt(0);
         error -> {T, S} = get_error_info(invalid_problem),
                  io:format("~s~n", [T]),
-                 erlang:halt(0)
+                 erlang:halt(S)
     end;
 main(["help"]) ->
     print_help(),
