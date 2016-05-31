@@ -19,8 +19,12 @@ dist-clean: clean
 	rm -rfv _build
 	rm -rfv brahmin_runner
 
-lint:
+lint: dialyze xref
+
+dialyze:
 	REBAR_PROFILE=dev rebar3 dialyzer
+
+xref:
 	REBAR_PROFILE=dev rebar3 xref
 
 watch:
