@@ -44,9 +44,14 @@ main([TimeStr, ProblemName]) ->
                         {ok, Value} -> Value;
                         error -> do_error(invalid_problem)
                     end,
-    Runner = spawn(?MODULE, foo, [0]),
+    %Runner = spawn(runner, run, [Problem, ParsedProblem, Time]),
+    {ok, Runner} = runner:run(Problem, ParsedProblem, Time),
+    io:format("~p~n", [Runner]),
     erlang:monitor(process, Runner),
-    timer:exit_after(Time * 1000, Runner, "Timeout!"),
+    io:format("~p~n", [Runner]),
+                                                %timer:exit_after(Time * 1000, Runner, "Timeout!"),
+    observer:start(),
+    %timer:sleep(5000),
     receive
         {'DOWN', _, process, Runner, Reason} ->
             io:format("~p~n", [Reason])
