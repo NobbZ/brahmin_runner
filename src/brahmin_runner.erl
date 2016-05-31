@@ -1,7 +1,7 @@
 -module(brahmin_runner).
 
 %% API exports
--export([main/1]).
+-export([main/1, foo/1]).
 
 %% Functions exposed for beeing used from outside of the OTP-app
 -ignore_xref([main/1]).
@@ -43,10 +43,23 @@ main([TimeStr, ProblemName]) ->
     ParsedProblem = case problem:check(Problem) of
                         {ok, Value} -> Value;
                         error -> do_error(invalid_problem)
-                    end;
+                    end,
+    Runner = spawn(?MODULE, foo, [0]),
+    erlang:monitor(process, Runner),
+    timer:exit_after(Time * 1000, Runner, "Timeout!"),
+    receive
+        {'DOWN', _, process, Runner, Reason} ->
+            io:format("~p~n", [Reason])
+    end,
+    erlang:halt(0);
 main(Args) ->
     io:format("Args: ~p~n", [Args]),
     erlang:halt(0).
+
+foo(N) ->
+    io:format("~p: ~p~n", [self(), N]),
+    timer:sleep(1000),
+    foo(N + 1).
 
 %%====================================================================
 %% Internal functions
