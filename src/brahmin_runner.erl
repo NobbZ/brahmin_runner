@@ -14,6 +14,18 @@
 -spec(main(list()) -> no_return()).
 main([]) ->
     do_error(args_missing);
+main(["validate", ProblemName]) ->
+    Problem = case file:read_file("problems/" ++ ProblemName ++ ".prb") of
+                  {ok, P} -> binary_to_list(P);
+                  {error, _} -> do_error(file_error)
+              end,
+    case problem:check(Problem) of
+        {ok, _} -> io:format("No errors in problemdescription!~n"),
+                   erlang:halt(0);
+        error -> {T, S} = get_error_info(invalid_problem),
+                 io:format("~s~n", [T]),
+                 erlang:halt(0)
+    end;
 main(["help"]) ->
     print_help(),
     erlang:halt(0);
@@ -48,7 +60,8 @@ do_error(ErrorType) ->
 
 get_error_info(args_missing) -> {"Missing arguments", 1};
 get_error_info(invalid_time) -> {"Time is not an integer", 2};
-get_error_info(file_error)   -> {"File error", 3}.
+get_error_info(file_error)   -> {"File error", 3};
+get_error_info(invalid_problem) -> {"There are errors in the problem description", 4}.
 
 print_help() ->
     io:format("./~s <~s> <~s>~n~n", [color:cyanb("brahmin_runner"),
