@@ -3,3 +3,8 @@ otp_release:
   - 18.3
   - 17.5
   - R16B03
+
+before_script:
+  - wget --no-check-certificate https://github.com/erlang/rebar3/archive/3.1.1.tar.gz
+  - tar xvzf 3.1.1
+  - ls -lh 3.1.1
