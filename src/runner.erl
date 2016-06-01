@@ -5,6 +5,7 @@
 -behaviour(gen_fsm).
 -export([init/1, handle_info/3, terminate/3]).
 
+-ignore_xref([warm_up/2]).
 -export([warm_up/2]).
 
 -record(state_data, {
