@@ -54,7 +54,7 @@ main([TimeStr, ProblemName]) ->
     %timer:sleep(5000),
     receive
         {'DOWN', _, process, Runner, Reason} ->
-            io:format("~p~n", [Reason])
+            ok %io:format("~p~n", [Reason])
     end,
     erlang:halt(0);
 main(Args) ->
