@@ -8,6 +8,11 @@ env:
   global:
     - PATH=./rebar3-3.1.1:$PATH
 
+cache:
+  directories:
+    - ./rebar3-3.1.1
+    - /home/travis/.cache/rebar3
+
 before_script:
   - wget --no-check-certificate https://github.com/erlang/rebar3/archive/3.1.1.tar.gz
   - tar xvzf 3.1.1.tar.gz
