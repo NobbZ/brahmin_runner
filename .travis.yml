@@ -4,7 +4,18 @@ otp_release:
   - 17.5
   - R16B03
 
+env:
+  global:
+    - PATH=./rebar3-3.1.1:$PATH
+
 before_script:
   - wget --no-check-certificate https://github.com/erlang/rebar3/archive/3.1.1.tar.gz
   - tar xvzf 3.1.1.tar.gz
-  - ls -lh 3.1.1
+  - cd rebar3-3.1.1
+  - ./bootstrap
+
+script:
+  - make dialyze
+  - make xref
+  - make test
+  - make brahmin_runner
