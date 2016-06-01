@@ -13,6 +13,7 @@ before_script:
   - tar xvzf 3.1.1.tar.gz
   - cd rebar3-3.1.1
   - ./bootstrap
+  - cd ..
 
 script:
   - make dialyze
