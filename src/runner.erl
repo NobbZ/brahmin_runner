@@ -3,7 +3,8 @@
 -export([run/3]).
 
 -behaviour(gen_fsm).
--export([init/1, handle_info/3, terminate/3]).
+-export([init/1, handle_info/3, handle_event/3, handle_sync_event/4,
+         code_change/4, terminate/3]).
 
 -ignore_xref([warm_up/2]).
 -export([warm_up/2]).
@@ -42,7 +43,16 @@ handle_info({Port, {exit_status, ES}}, warm_up, SD) ->
                              color:redb(io_lib:format("~B", [ES]))]),
     {stop, {exit_early, ES}, SD}.
 
-terminate(Reason, StateName, StateData) ->
+handle_event(Event, StateName, SD) ->
+    {stop, {unknown_event, Event, StateName}, SD}.
+
+handle_sync_event(Event, From, StateName, SD) ->
+    {stop, {unknown_event, Event, From, StateName}, SD}.
+
+code_change(_OldVsn, StateName, StateData, _Extra) ->
+    {ok, StateName, StateData}.
+
+terminate(_Reason, _StateName, _StateData) ->
     ok.
 
 
