@@ -1,7 +1,7 @@
 -module(brahmin_runner).
 
 %% API exports
--export([main/1, foo/1]).
+-export([main/1]).
 
 %% Functions exposed for beeing used from outside of the OTP-app
 -ignore_xref([main/1]).
@@ -60,11 +60,6 @@ main([TimeStr, ProblemName]) ->
 main(Args) ->
     io:format("Args: ~p~n", [Args]),
     erlang:halt(0).
-
-foo(N) ->
-    io:format("~p: ~p~n", [self(), N]),
-    timer:sleep(1000),
-    foo(N + 1).
 
 %%====================================================================
 %% Internal functions

@@ -3,7 +3,7 @@ WATCHES=src include $(wildcard rebar.*)
 SHELL=bash
 
 SCANNER=$(shell find . -name '*.xrl')
-PARSER =$(sehll find . -name '*.yrl')
+PARSER =$(shell find . -name '*.yrl')
 GENNED =$(SCANNER:%.xrl=%.erl) $(PARSER:%.yrl=%.erl)
 
 .PHONY: all lint test brahmin_runner _build/default/bin/brahmin_runner

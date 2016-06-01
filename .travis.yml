@@ -1,0 +1,31 @@
+language: erlang
+otp_release:
+  - 18.3
+  - 17.5
+  - R16B03
+
+env:
+  global:
+    - REBAR_VERSION=3.1.1
+    - PATH=./rebar3-$REBAR_VERSION:$PATH
+
+cache:
+  directories:
+    - ./rebar3-$REBAR_VERSION
+    - /home/travis/.cache/rebar3
+
+before_install:
+  - if [ ! -f rebar3-$REBAR_VERSION/rebar3 ]; then wget --no-check-certificate https://github.com/erlang/rebar3/archive/3.1.1.tar.gz; fi
+  - if [ -f $REBAR_VERSION.tar.gz ]; then tar xvzf 3.1.1.tar.gz; fi
+  - cd rebar3-$REBAR_VERSION
+  - if [ ! -f ./rebar3 ]; then ./bootstrap; fi
+  - cd ..
+
+before_script: []
+
+script:
+  - if [ "$TRAVIS_OTP_RELEASE" != "R16B03" -a
+         "$TRAVIS_OTP_RELEASE" != "17.5" ]; then make dialyze; fi
+  - make xref
+  - make test
+  - make brahmin_runner
