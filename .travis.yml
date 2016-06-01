@@ -21,7 +21,7 @@ before_script:
   - cd ..
 
 script:
-  - if [[ "$TRAVIS_OTP_RELEASE" -ne "R16B03" -a \
+  - if [[ "$TRAVIS_OTP_RELEASE" -ne "R16B03" -a
           "$TRAVIS_OTP_RELEASE" -ne "17.5" ]]; then make dialyze
   - make xref
   - make test
