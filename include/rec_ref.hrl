@@ -1,0 +1,1 @@
+-record(rec_ref, {x, y, id}).
