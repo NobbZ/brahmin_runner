@@ -6,13 +6,14 @@
 -export([init/1, handle_info/3, handle_event/3, handle_sync_event/4,
          code_change/4, terminate/3]).
 
--ignore_xref([warm_up/2]).
--export([warm_up/2]).
+-ignore_xref([warm_up/2, running/2]).
+-export([warm_up/2, running/2]).
 
 -record(state_data, {
           problem,
           parsed,
-          runtime
+          runtime,
+          port
          }).
 
 %% public API
@@ -22,15 +23,19 @@ run(Problem, Parsed, Time) ->
 %% gen_fsm API
 
 init({Problem, Parsed, Time}) ->
-    gen_fsm:send_event_after(1000, {countdown, 10}),
+    gen_fsm:send_event_after(1000, {countdown, 5}),
     Make = os:find_executable("make"),
     io:format("~p~n", [Make]),
-    open_port({spawn_executable, Make}, [{args, [<<"run">>]},
-                                         exit_status]),
+    Port = open_port({spawn_executable, Make}, [{args, [<<"run">>]},
+                                                exit_status]),
     {ok, warm_up, #state_data{problem = Problem,
                               parsed  = Parsed,
-                              runtime = Time * 1000}}.
+                              runtime = Time * 1000,
+                              port    = Port}}.
 
+handle_info({Port, {data, Line}}, running, SD) ->
+    io:format("~s~n", [color:green(Line)]),
+    {next_state, running, SD};
 handle_info({Port, {data, Line}}, warm_up, SD) ->
     io:format("~s~n", [color:yellow(Line)]),
     {next_state, warm_up, SD};
@@ -57,15 +62,20 @@ code_change(_OldVsn, StateName, StateData, _Extra) ->
 terminate(_Reason, _StateName, _StateData) ->
     ok.
 
-
 %% state handlers
 
 warm_up({countdown, 0}, SD) ->
-    {stop, 'ended', SD};
+    gen_fsm:send_event_after(SD#state_data.runtime * 1000 + 100, time_is_over),
+    gen_fsm:send_event_after(100, start),
+    {next_state, running, SD};
 warm_up({countdown, N}, SD) ->
     io:format("~B~n", [N]),
     gen_fsm:send_event_after(1000, {countdown, N - 1}),
     {next_state, warm_up, SD}.
+
+running(start, SD) ->
+    port_command(SD#state_data.port, SD#state_data.problem),
+    {next_state, running, SD}.
 
 %% Local Variables:
 %% flycheck-erlang-include-path: ("../include")

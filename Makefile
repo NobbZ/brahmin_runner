@@ -44,3 +44,9 @@ brahmin_runner: _build/default/bin/brahmin_runner
 
 _build/default/bin/brahmin_runner:
 	rebar3 escriptize
+
+# This is a target to test the built script!
+run:
+	@sleep 6
+	@echo "[[(0,0,0),(0,2,1),(2,0,2)]]"
+	@sleep 10
