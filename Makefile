@@ -19,10 +19,13 @@ dist-clean: clean
 	rm -rfv _build
 	rm -rfv brahmin_runner
 
-lint: dialyze xref
+lint: dialyze elvis xref
 
 dialyze:
 	REBAR_PROFILE=dev rebar3 dialyzer
+
+elvis:
+	elvis rock
 
 xref:
 	REBAR_PROFILE=dev rebar3 xref
