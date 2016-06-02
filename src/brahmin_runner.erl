@@ -49,7 +49,6 @@ main([TimeStr, ProblemName]) ->
     io:format("~p~n", [Runner]),
     erlang:monitor(process, Runner),
     io:format("~p~n", [Runner]),
-                                                %timer:exit_after(Time * 1000, Runner, "Timeout!"),
     observer:start(),
     %timer:sleep(5000),
     receive
@@ -74,7 +73,8 @@ do_error(ErrorType) ->
 get_error_info(args_missing) -> {"Missing arguments", 1};
 get_error_info(invalid_time) -> {"Time is not an integer", 2};
 get_error_info(file_error)   -> {"File error", 3};
-get_error_info(invalid_problem) -> {"There are errors in the problem description", 4}.
+get_error_info(invalid_problem) ->
+    {"There are errors in the problem description", 4}.
 
 print_help() ->
     io:format("~s: run a problem~n", [color:yellowb("OPTION A")]),
@@ -83,9 +83,12 @@ print_help() ->
                                      color:blue("time"),
                                      color:blue("problem")]),
     io:format("~s~n~n", [color:blueb("Arguments:")]),
-    io:format("  <~s>   : Time in the seconds the program is allowed to run~n", [color:blue("time")]),
-    io:format("  <~s>: The name of the problem to run~n~n", [color:blue("problem")]),
-    io:format("The <~s> is loaded from subfolder \"problems\", extension has to be \".prb\".~n", [color:blue("problem")]),
+    io:format("  <~s>   : Time in the seconds the program is allowed to run~n",
+              [color:blue("time")]),
+    io:format("  <~s>: The name of the problem to run~n~n",
+              [color:blue("problem")]),
+    io:format("The <~s> is loaded from subfolder \"problems\", extension has" ++
+                  " to be \".prb\".~n", [color:blue("problem")]),
 
     io:format("~n~n~s: validate a problem~n", [color:yellowb("OPTION B")]),
     io:format("~s~n", [color:yellow("========")]),
@@ -93,8 +96,10 @@ print_help() ->
                                    color:cyan("validate"),
                                    color:blue("problem")]),
     io:format("~s~n~n", [color:blueb("Argument:")]),
-    io:format("  <~s>: The name of the problem to validate~n~n", [color:blue("problem")]),
-    io:format("The <~s> is loaded from subfolder \"problems\", extension has to be \".prb\".~n", [color:blue("problem")]).
+    io:format("  <~s>: The name of the problem to validate~n~n",
+              [color:blue("problem")]),
+    io:format("The <~s> is loaded from subfolder \"problems\", extension has" ++
+                  " to be \".prb\".~n", [color:blue("problem")]).
 
 %% Local Variables:
 %% flycheck-erlang-include-path: ("../include")
