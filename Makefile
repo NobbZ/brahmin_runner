@@ -50,3 +50,6 @@ run:
 	@sleep 6
 	@echo "[[(0,0,0),(0,2,1),(2,0,2)]]"
 	@sleep 10
+
+TAGS:
+	@find . -name '*.[he]rl' ! -path '*/test/*' -print | etags -
