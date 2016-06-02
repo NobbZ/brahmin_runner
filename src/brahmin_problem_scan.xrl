@@ -14,7 +14,7 @@ Rules.
 
 -?{DIGIT}+ : {token, {int, TokenLine, list_to_integer(TokenChars)}}.
 
-{WS}+ : skip_token.
+% {WS}+ : skip_token.
 
 Erlang code.
 

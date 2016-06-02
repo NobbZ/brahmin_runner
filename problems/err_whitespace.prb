@@ -1,0 +1,5 @@
+[(3,3)]
+[(3, 3,1)]
+1
+Dies ist ein sehr einfaches Beispiel, das lediglich überprüfen soll ob ein
+Teilnehmerprogram in der Lage ist die Eingabe zu parsen.

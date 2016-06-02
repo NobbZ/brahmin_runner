@@ -48,12 +48,17 @@ parse_string(String) when is_binary(String) ->
     parse_string(binary_to_list(String));
 parse_string(String) when is_list(String) ->
     FirstLines = get_first_lines(String, 3),
-    {ok, Tokens, _} = brahmin_problem_scan:string(FirstLines),
-    case parse(Tokens) of
-        {ok, Parsed} ->
-            {ok, Parsed};
-        {error, {Line, _, Message}} ->
-            {error, Line, Message}
+    case brahmin_problem_scan:string(FirstLines) of
+        {ok, Tokens, _} ->
+            case parse(Tokens) of
+                {ok, Parsed} ->
+                    {ok, Parsed};
+                {error, {Line, _, Message}} ->
+                    {error, Line, Message}
+            end;
+        {error, {Line, _, {illegal, S}}, _} ->
+            {error, Line, "Illegal token: " ++ S};
+        Foo -> io:format("~p~n", [Foo])
     end.
 
 get_first_lines(Input, Count) ->
