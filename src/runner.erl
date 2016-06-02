@@ -35,10 +35,12 @@ handle_info({Port, {data, Line}}, warm_up, SD) ->
     io:format("~s~n", [color:yellow(Line)]),
     {next_state, warm_up, SD};
 handle_info({Port, {exit_status, 0}}, warm_up, SD) ->
-    io:format("~s~n", [color:red("Program exited unexpectedly but without any errors.")]),
+    io:format("~s~n", [color:red("Program exited unexpectedly but without" ++
+                                     " any errors.")]),
     {stop, {exit_early, 0}, SD};
 handle_info({Port, {exit_status, ES}}, warm_up, SD) ->
-    io:format("~s~n", [color:red("Program exited unexpected and with an error!")]),
+    io:format("~s~n",
+              [color:red("Program exited unexpected and with an error!")]),
     io:format("~s: ~s~n~n", [color:red("Exit code"),
                              color:redb(io_lib:format("~B", [ES]))]),
     {stop, {exit_early, ES}, SD}.

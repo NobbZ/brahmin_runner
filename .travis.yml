@@ -7,11 +7,12 @@ otp_release:
 env:
   global:
     - REBAR_VERSION=3.1.1
-    - PATH=./rebar3-$REBAR_VERSION:$PATH
+    - PATH=./elvis:./rebar3-$REBAR_VERSION:$PATH
 
 cache:
   directories:
     - ./rebar3-$REBAR_VERSION
+    - ./elvis
     - /home/travis/.cache/rebar3
 
 before_install:
@@ -20,12 +21,14 @@ before_install:
   - cd rebar3-$REBAR_VERSION
   - if [ ! -f ./rebar3 ]; then ./bootstrap; fi
   - cd ..
+  - if [ "$TRAVIS_OTP_RELEASE" == "18.3" -a ! -f elvis/elvis ]; then git clone https://github.com/inaka/elvis.git; cd elvis; make; make install; cd ..; fi
 
 before_script: []
 
 script:
   - if [ "$TRAVIS_OTP_RELEASE" != "R16B03" -a
          "$TRAVIS_OTP_RELEASE" != "17.5" ]; then make dialyze; fi
+  - if [ "$TRAVIS_OTP_RELEASE" == "18.3" ]; then make elvis; fi
   - make xref
   - make test
   - make brahmin_runner
