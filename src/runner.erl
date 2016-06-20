@@ -26,7 +26,8 @@ run(Problem, Parsed, Time) ->
 
 %% gen_fsm API
 
--spec init(any()) -> {ok, warm_up, state_data()}.
+-spec init({string() | binary(), br_exercise:exercise(), pos_integer()})
+          -> {ok, warm_up, state_data()}.
 init({Problem, Parsed, Time}) ->
     gen_fsm:send_event_after(1000, {countdown, 5}),
     Make = os:find_executable("make"),
@@ -84,7 +85,7 @@ terminate(_Reason, _StateName, _StateData) ->
 -spec warm_up({countdown, 0}, state_data())
              -> {next_state, running, state_data()};
              ({countdown, pos_integer()}, state_data())
-             -> {next_state, running, state_data()}.
+             -> {next_state, warm_up, state_data()}.
 warm_up({countdown, 0}, SD) ->
     gen_fsm:send_event_after(SD#state_data.runtime * 1000 + 100, time_is_over),
     gen_fsm:send_event_after(100, start),
