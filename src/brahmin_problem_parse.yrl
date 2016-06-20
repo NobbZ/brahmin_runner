@@ -5,9 +5,7 @@ Terminals '[' ']' '(' ')' ',' nl int.
 Rootsymbol exercise.
 
 exercise ->
-    '[' bags ']' nl '[' rectangles ']' nl fill_price nl : #exercise{bags = '$2',
-                                                                    rects = '$6',
-                                                                    fill = '$9'}.
+    '[' bags ']' nl '[' rectangles ']' nl fill_price nl : br_exercise:new('$2', '$6', '$9').
 
 bags ->
     bag : ['$1'].
@@ -36,7 +34,6 @@ Erlang code.
 
 -include("bag.hrl").
 -include("rectangle.hrl").
--include("exercise.hrl").
 
 -export([parse_string/1]).
 
