@@ -1,1 +1,0 @@
--record(bag, {width, height}).
