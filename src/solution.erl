@@ -1,6 +1,15 @@
 -module(solution).
 
--export([check/1]).
+-export([new/1, check/1, evaluate/2]).
+
+-export_type([solution/0]).
+
+-record(solution, {bags :: list(cr_bag:bag())}).
+-type solution() :: #solution{}.
+
+-spec new(list(cr_bag:bag())) -> solution().
+new(Bags) ->
+    #solution{bags = Bags}.
 
 check(Solution) when is_list(Solution); is_binary(Solution) ->
     case brahmin_solution_parse:parse_string(Solution) of

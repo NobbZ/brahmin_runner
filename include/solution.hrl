@@ -1,1 +1,0 @@
--record(solution, {bags}).

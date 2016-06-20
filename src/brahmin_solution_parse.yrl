@@ -4,8 +4,8 @@ Terminals '[' ']' '(' ')' ',' nl int.
 
 Rootsymbol solution.
 
-solution -> '[' ']' nl      : #solution{bags = []}.
-solution -> '[' bags ']' nl : #solution{bags = '$2'}.
+solution -> '[' ']' nl      : solution:new([]).
+solution -> '[' bags ']' nl : solution:new('$2').
 
 bags -> bag          : ['$1'].
 bags -> bag ',' bags : ['$1'|'$3'].
@@ -24,7 +24,6 @@ id -> int : extract('$1').
 
 Erlang code.
 
--include("solution.hrl").
 -include("rec_ref.hrl").
 
 -export([parse_string/1]).
