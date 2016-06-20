@@ -24,15 +24,13 @@ bag ->
     '(' width ',' height ')' : br_bag:new('$2', '$4').
 
 rectangle ->
-    '(' width ',' height ',' value ')' : #rectangle{width = '$2', height = '$4', value = '$6'}.
+    '(' width ',' height ',' value ')' : br_rectangle:new('$2', '$4', '$6').
 
 width  -> int : extract('$1').
 height -> int : extract('$1').
 value  -> int : extract('$1').
 
 Erlang code.
-
--include("rectangle.hrl").
 
 -export([parse_string/1]).
 
