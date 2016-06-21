@@ -24,6 +24,8 @@ ebin
 *.o
 *.swp
 *.swo
+TAGS
+modules.svg
 
 # Generated source files
 src/*_parse.erl
@@ -34,3 +36,4 @@ src/*_scan.erl
 
 # Generated binaries
 brahmin_runner
+dev_brahmin_runner
