@@ -1,7 +1,7 @@
 -module(br_rectangle).
 
--export([new/3, get_x/1, get_y/1, get_width/1, get_height/1, get_value/1, get_size/1]).
--export([new_ref/3, get_id/1,fill_context/2, overlap/2]).
+-export([new/3, get_x/1, get_y/1, get_width/1, get_height/1, get_value/1,
+         get_size/1, new_ref/3, get_id/1, fill_context/2, overlap/2]).
 
 -export_type([rectangle/0, ref/0]).
 
@@ -36,7 +36,8 @@ get_height(#rectangle{height = H}) -> H.
 get_value(#rectangle{value = V}) -> V.
 get_size(#rectangle{width = W, height = H}) -> W * H.
 
--spec fill_context(list(ref()), list(rectangle())) -> list({ref(), rectangle()}).
+-spec fill_context(list(ref()), list(rectangle()))
+                  -> list({ref(), rectangle()}).
 fill_context([], _) -> [];
 fill_context([Ref = #rec_ref{}|T], Rects) when is_list(Rects) ->
     Rec = lists:nth(
@@ -47,4 +48,5 @@ fill_context([Ref = #rec_ref{}|T], Rects) when is_list(Rects) ->
 -spec overlap({ref(), rectangle()}, {ref(), rectangle()}) -> boolean().
 overlap({#rec_ref{x = X1, y = Y1}, #rectangle{width = W1, height = H1}},
         {#rec_ref{x = X2, y = Y2}, #rectangle{width = W2, height = H2}}) ->
-    not ((X1 + W1 =< X2) or (X1 >= X2 + W2) or (Y1 + H1 =< Y2) or (Y1 >= Y2 + H2)).
+    not ((X1 + W1 =< X2) or (X1 >= X2 + W2)
+         or (Y1 + H1 =< Y2) or (Y1 >= Y2 + H2)).
