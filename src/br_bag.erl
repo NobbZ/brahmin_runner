@@ -1,6 +1,6 @@
 -module(br_bag).
 
--export([new/2, get_area/1]).
+-export([new/2, get_area/1, can_sonsume/2]).
 
 -export_type([bag/0]).
 
@@ -16,3 +16,11 @@ new(Width, Height) ->
 
 -spec get_area(bag()) -> non_neg_integer().
 get_area(#bag{width = W, height = H}) -> W * H.
+
+-spec can_sonsume(bag(), {X :: non_neg_integer(), Y :: non_neg_integer(),
+                          Width :: non_neg_integer(), Height :: non_neg_integer()})
+                 -> boolean().
+can_sonsume(#bag{width = BW, height = BH}, {X, Y, W, H}) when X + W =< BW, Y + H =< BH ->
+    true;
+can_sonsume(#bag{}, {_, _, _, _}) ->
+    false.
