@@ -54,8 +54,7 @@ parse_string(String) when is_list(String) ->
                     {error, Line, Message}
             end;
         {error, {Line, _, {illegal, S}}, _} ->
-            {error, Line, "Illegal token: " ++ S};
-        Foo -> io:format("~p~n", [Foo])
+            {error, Line, "Illegal token: " ++ S}
     end.
 
 get_first_lines(Input, Count) ->
