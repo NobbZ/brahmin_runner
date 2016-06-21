@@ -32,13 +32,18 @@ evaluate(Solution, Problem) ->
     BagSpaces = bag_spaces(br_exercise:get_bags(Problem)),
     Rectangles = br_exercise:get_rectangles(Problem),
     SortedSolution = lists:map(fun sort_by_ref/1, Solution#solution.refs),
-    FillContext = lists:map(fun (Refs) -> br_rectangle:fill_context(Refs, Rectangles) end, SortedSolution),
-    ValidatedTimeAndSpace = go_to_tardis(FillContext, br_exercise:get_bags(Problem)),
-    if ValidatedTimeAndSpace ->
+    FillContext =
+        lists:map(fun (Refs) ->
+                          br_rectangle:fill_context(Refs, Rectangles)
+                  end, SortedSolution),
+    ValidatedTimeAndSpace = go_to_tardis(FillContext,
+                                         br_exercise:get_bags(Problem)),
+    case ValidatedTimeAndSpace of
+        true ->
             Score = sum_up_context(FillContext, 0),
             FillNeeded = fill_up(lists:sum(BagSpaces), FillContext),
             Score + FillNeeded * -br_exercise:get_fill_cost(Problem);
-       true ->
+        _ ->
             error
     end.
 %    BagScores = score_bags(SortedSolution, Problem#exercise.bags, BagSpaces),
@@ -70,8 +75,10 @@ go_to_tardis([[{Ref, Rect}|Others]|CT], [Bag|BT]) ->
                                     br_rectangle:get_y(Ref),
                                     br_rectangle:get_width(Rect),
                                     br_rectangle:get_height(Rect)}),
-    NoOverlaps = lists:all(fun (R) -> not br_rectangle:overlap({Ref, Rect}, R) end, Others),
-    io:format("{~p, ~p} in ~p~n --> Bag ~p~n --> Fits: ~p~n --> BT: ~p~n --> CT: ~p~n --> NoOv: ~p~n", [Ref, Rect, Others, Bag, Fits, BT, CT, NoOverlaps]),
+    NoOverlaps =
+        lists:all(fun (R) ->
+                          not br_rectangle:overlap({Ref, Rect}, R)
+                  end, Others),
     Fits and NoOverlaps andalso go_to_tardis([Others|CT], [Bag|BT]).
 
 sum_up_context([], Acc) -> Acc;
