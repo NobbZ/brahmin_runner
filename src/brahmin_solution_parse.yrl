@@ -16,15 +16,13 @@ bag -> '[' rectangles ']' : '$2'.
 rectangles -> rectangle                : ['$1'].
 rectangles -> rectangle ',' rectangles : ['$1'|'$3'].
 
-rectangle -> '(' x ',' y ',' id ')' : #rec_ref{x = '$2', y = '$4', id = '$6'}.
+rectangle -> '(' x ',' y ',' id ')' : br_rectangle:new_ref('$6', '$2', '$4').
 
 x  -> int : extract('$1').
 y  -> int : extract('$1').
 id -> int : extract('$1').
 
 Erlang code.
-
--include("rec_ref.hrl").
 
 -export([parse_string/1]).
 
