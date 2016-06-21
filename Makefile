@@ -6,9 +6,17 @@ SCANNER=$(shell find . -name '*.xrl')
 PARSER =$(shell find . -name '*.yrl')
 GENNED =$(SCANNER:%.xrl=%.erl) $(PARSER:%.yrl=%.erl)
 
-.PHONY: all lint test brahmin_runner _build/default/bin/brahmin_runner
+.PHONY: all lint test brahmin_runner _build/default/bin/brahmin_runner dev_brahmin_runner _build/dev/bin/brahmin_runner
 
-all: lint test brahmin_runner
+all: lint graph test brahmin_runner
+
+graphs: modules.svg # applications.svg
+
+modules.svg: dev_brahmin_runner
+	./grapherl -m ./_build/dev/lib/brahmin_runner/ $@
+
+applications.svg: dev_brahmin_runner
+	./grapherl -a ./_build/dev/lib/brahmin_runner $@
 
 clean:
 	rm -rfv _build/{default,dev,test}/lib/brahmin_runner
@@ -42,8 +50,14 @@ test:
 brahmin_runner: _build/default/bin/brahmin_runner
 	cp $< $@
 
+dev_brahmin_runner: _build/dev/bin/brahmin_runner
+	cp $< $@
+
 _build/default/bin/brahmin_runner:
 	rebar3 escriptize
+
+_build/dev/bin/brahmin_runner:
+	REBAR_PROFILE=dev rebar3 escriptize
 
 # This is a target to test the built script!
 run:
