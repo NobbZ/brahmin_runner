@@ -14,7 +14,8 @@
           parsed   :: problem:problem(),
           runtime  :: pos_integer(),
           port     :: port(),
-          received :: non_neg_integer()
+          received :: non_neg_integer(),
+          max      :: integer() | undefined
          }).
 -type(state_data() :: #state_data{}).
 -type(state_name() :: warmup | running).
@@ -43,9 +44,25 @@ init({Problem, Parsed, Time}) ->
 -spec handle_info({port(), any()}, state_name(), state_data())
                  -> {next_state | stop, state_name(), state_data()}.
 handle_info({Port, {data, Line}}, running, SD = #state_data{port = Port}) ->
-    io:format("~s~n", [color:green(Line)]),
-    % TODO: check and evaluate line
-    {next_state, running, SD#state_data{received = SD#state_data.received + 1}};
+    Current = SD#state_data.received,
+    io:format("Erhalte Loesungsvorschlag #~b: ~s~n", [Current,
+                                                      color:green(Line)]),
+    case solution:check(Line) of
+        {ok, SolutionParsed} ->
+            Score = solution:evaluate(SolutionParsed, SD#state_data.parsed),
+            NewMax = case SD#state_data.max of
+                         undefined -> Score;
+                         Old -> lists:max([Old, Score])
+                     end,
+            io:format("--> Loesungsvorschlag #~b wurde mit ~b Punkten bewertet"
+                      " (bisherige Bestleistung ~s)~n",
+                      [Current, Score, SD#state_data.max]),
+            {next_state, running, SD#state_data{received = Current + 1,
+                                                max = NewMax}};
+        _ ->
+            io:format("--> Ungueltig!! ~b <--", [Current]),
+            {next_state, running, SD#state_data{received = Current + 1}}
+    end;
 handle_info({Port, {data, Line}}, warm_up, SD = #state_data{port = Port}) ->
     io:format("~s~n", [color:yellow(Line)]),
     {next_state, warm_up, SD};

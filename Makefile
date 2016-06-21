@@ -10,7 +10,7 @@ GENNED =$(SCANNER:%.xrl=%.erl) $(PARSER:%.yrl=%.erl)
 
 all: lint graph test brahmin_runner
 
-graphs: modules.svg # applications.svg
+graph: modules.svg # applications.svg
 
 modules.svg: dev_brahmin_runner
 	./grapherl -m ./_build/dev/lib/brahmin_runner/ $@
@@ -26,6 +26,7 @@ clean:
 dist-clean: clean
 	rm -rfv _build
 	rm -rfv brahmin_runner
+	rm -rfv dev_brahmin_runner
 
 lint: dialyze elvis xref
 
