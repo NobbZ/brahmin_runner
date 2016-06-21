@@ -49,7 +49,7 @@ main([TimeStr, ProblemName]) ->
     io:format("~p~n", [Runner]),
     erlang:monitor(process, Runner),
     io:format("~p~n", [Runner]),
-    observer:start(),
+    %observer:start(),
     %timer:sleep(5000),
     receive
         {'DOWN', _, process, Runner, Reason} ->
