@@ -80,7 +80,10 @@ handle_info({Port, {exit_status, ES}}, warm_up,
               [color:red("Program exited unexpected and with an error!")]),
     io:format("~s: ~s~n~n", [color:red("Exit code"),
                              color:redb(io_lib:format("~B", [ES]))]),
-    {stop, {exit_early, ES}, SD}.
+    {stop, {exit_early, ES}, SD};
+handle_info(Info, StateName, StateData) ->
+    io:format("UNKNOWN: ~p ~n   ~p~n   ~p", [Info, StateName, StateData]),
+    {stop, {unknown_event, Info, StateName}, StateData}.
 
 -spec handle_event(any(), state_name(), state_data())
                   -> {stop, tuple(), state_data()}.
