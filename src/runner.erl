@@ -123,10 +123,17 @@ warm_up({countdown, N}, SD) ->
     gen_fsm:send_event_after(1000, {countdown, N - 1}),
     {next_state, warm_up, SD}.
 
--spec running(start, state_data()) -> {next_state, running, state_data()}.
+-spec running(start, state_data()) -> {next_state, running, state_data()};
+             (time_is_over, state_data()) -> {next_state,
+                                              collecting,
+                                              state_data()}.
 running(start, SD) ->
     port_command(SD#state_data.port, SD#state_data.problem),
-    {next_state, running, SD}.
+    {next_state, running, SD};
+running(time_is_over, SD) ->
+    io:format("Closing port!~n"),
+    port_close(SD#state_data.port),
+    {next_state, collecting, SD}.
 
 get_max(Score, undefined) -> Score;
 get_max(Score, OldMax) when Score > OldMax -> Score;
