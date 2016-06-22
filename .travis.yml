@@ -6,7 +6,7 @@ otp_release:
 
 env:
   global:
-    - REBAR_VERSION=3.1.1
+    - REBAR_VERSION=3.2.0
     - PATH=./elvis:./rebar3-$REBAR_VERSION:$PATH
 
 cache:
@@ -16,8 +16,8 @@ cache:
     - /home/travis/.cache/rebar3
 
 before_install:
-  - if [ ! -f rebar3-$REBAR_VERSION/rebar3 ]; then wget --no-check-certificate https://github.com/erlang/rebar3/archive/3.1.1.tar.gz; fi
-  - if [ -f $REBAR_VERSION.tar.gz ]; then tar xvzf 3.1.1.tar.gz; fi
+  - if [ ! -f rebar3-$REBAR_VERSION/rebar3 ]; then wget --no-check-certificate https://github.com/erlang/rebar3/archive/$REBAR_VERSION.tar.gz; fi
+  - if [ -f $REBAR_VERSION.tar.gz ]; then tar xvzf $REBAR_VERSION.tar.gz; fi
   - cd rebar3-$REBAR_VERSION
   - if [ ! -f ./rebar3 ]; then ./bootstrap; fi
   - cd ..
