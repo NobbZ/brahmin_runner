@@ -111,7 +111,7 @@ terminate(_Reason, _StateName, _StateData) ->
              ({countdown, pos_integer()}, state_data())
              -> {next_state, warm_up, state_data()}.
 warm_up({countdown, 0}, SD) ->
-    gen_fsm:send_event_after(SD#state_data.runtime * 1000 + 100, time_is_over),
+    gen_fsm:send_event_after(SD#state_data.runtime + 100, time_is_over),
     gen_fsm:send_event_after(100, start),
     {next_state, running, SD};
 warm_up({countdown, N}, SD) ->
