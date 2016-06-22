@@ -45,22 +45,26 @@ init({Problem, Parsed, Time}) ->
                  -> {next_state | stop, state_name(), state_data()}.
 handle_info({Port, {data, Line}}, running, SD = #state_data{port = Port}) ->
     Current = SD#state_data.received,
-    io:format("Erhalte Loesungsvorschlag #~b: ~s~n", [Current,
+    io:format("Erhalte Loesungsvorschlag #~b: ~s", [Current,
                                                       color:green(Line)]),
     case solution:check(Line) of
         {ok, SolutionParsed} ->
-            Score = solution:evaluate(SolutionParsed, SD#state_data.parsed),
-            NewMax = case SD#state_data.max of
-                         undefined -> Score;
-                         Old -> lists:max([Old, Score])
-                     end,
-            io:format("--> Loesungsvorschlag #~b wurde mit ~b Punkten bewertet"
-                      " (bisherige Bestleistung ~s)~n",
-                      [Current, Score, SD#state_data.max]),
-            {next_state, running, SD#state_data{received = Current + 1,
-                                                max = NewMax}};
+            case solution:evaluate(SolutionParsed, SD#state_data.parsed) of
+                error ->
+                    io:format("--> Ungültiger Lösungsvorschlag #~b <--~n" ,
+                              [Current]),
+                    {next_state, running,
+                     SD#state_data{received = Current + 1}};
+                Score when is_integer(Score) ->
+                    NewMax = get_max(Score, SD#state_data.max),
+                    io:format("--> Loesungsvorschlag #~b wurde mit ~b Punkten"
+                              " bewertet (bisherige Bestleistung ~s)~n",
+                              [Current, Score, SD#state_data.max]),
+                    {next_state, running, SD#state_data{received = Current + 1,
+                                                        max = NewMax}}
+            end;
         _ ->
-            io:format("--> Ungueltig!! ~b <--", [Current]),
+            io:format("--> Nicht parsebar!! ~b <--", [Current]),
             {next_state, running, SD#state_data{received = Current + 1}}
     end;
 handle_info({Port, {data, Line}}, warm_up, SD = #state_data{port = Port}) ->
@@ -116,6 +120,10 @@ warm_up({countdown, N}, SD) ->
 running(start, SD) ->
     port_command(SD#state_data.port, SD#state_data.problem),
     {next_state, running, SD}.
+
+get_max(Score, undefined) -> Score;
+get_max(Score, OldMax) when Score > OldMax -> Score;
+get_max(_, OldMax) -> OldMax.
 
 %% Local Variables:
 %% flycheck-erlang-include-path: ("../include")

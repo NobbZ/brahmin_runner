@@ -32,12 +32,20 @@ evaluate(Solution, Problem) ->
     BagSpaces = bag_spaces(br_exercise:get_bags(Problem)),
     Rectangles = br_exercise:get_rectangles(Problem),
     SortedSolution = lists:map(fun sort_by_ref/1, Solution#solution.refs),
-    FillContext =
-        lists:map(fun (Refs) ->
-                          br_rectangle:fill_context(Refs, Rectangles)
-                  end, SortedSolution),
-    ValidatedTimeAndSpace = go_to_tardis(FillContext,
-                                         br_exercise:get_bags(Problem)),
+    FillContext = try lists:map(fun (Refs) ->
+                                        br_rectangle:fill_context(Refs,
+                                                                  Rectangles)
+                                end, SortedSolution) of
+                      List -> List
+                  catch
+                      error:function_clause -> false
+                  end,
+    ValidatedTimeAndSpace =
+        case FillContext of
+            [_|_] -> go_to_tardis(FillContext,
+                                  br_exercise:get_bags(Problem));
+            false -> false
+        end,
     case ValidatedTimeAndSpace of
         true ->
             Score = sum_up_context(FillContext, 0),
