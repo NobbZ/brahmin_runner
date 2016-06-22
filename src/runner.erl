@@ -81,6 +81,10 @@ handle_info({Port, {exit_status, ES}}, warm_up,
     io:format("~s: ~s~n~n", [color:red("Exit code"),
                              color:redb(io_lib:format("~B", [ES]))]),
     {stop, {exit_early, ES}, SD};
+handle_info({Port, {exit_status, ES}}, running,
+           SD = #state_data{port = Port}) ->
+    io:format("Programmende mit ExitCode ~b~n", [ES]),
+    {stop, ok, SD};
 handle_info(Info, StateName, StateData) ->
     io:format("UNKNOWN: ~p ~n   ~p~n   ~p", [Info, StateName, StateData]),
     {stop, {unknown_event, Info, StateName}, StateData}.
