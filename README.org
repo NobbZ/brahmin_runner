@@ -1,28 +1,29 @@
 #+TITLE: Brahmin Runner
 #+AUTHOR: Norbert Melzer
 
-* Brahmin Runner
-
 Ein kleines Tool welches ermöglicht die eigenen Teilnehmerprogramme für den [[https://pwb.asta-wedel.de/SS16-BrahminPacker/index.html][PWB
 im Sommersemester 2016]] unter Wettbewerbsnahen Bedingungen zu testen.
 
-** Vorraussetzungen
+Ausserdem werden gemeinsam mit diesem Werkzeug bereits ein paar kleine Probleme
+mitgeliefert. Diese befinden sich im Unterordner ~problems~.
+
+* Vorraussetzungen
 
 - Es wird eine [[http://www.erlang.org/][Erlang Umgebung]] benötigt, mindestens in Version =16B3= benötigt.
 - Für das kompilieren wird ausserdem [[http://www.rebar3.org/][=rebar3=]] benötigt.[fn:1]
 
-** Kompilieren
+* Kompilieren
 
 #+BEGIN_SRC shell
 rebar3 escriptize # Es werden Abhängigkeiten heruntergeladen und kompiliert
 cp _build/default/bin/brahmin_runner $euer_projekt_pfad
 #+END_SRC
 
-** Benutzen
+* Benutzen
 
 Im Moment gibt es zwei Modi der Nutzung.
 
-*** Wettbewerbsmodus
+** Wettbewerbsmodus
 
 #+BEGIN_SRC shell
 brahmin_runner <zeit> <problem>
@@ -38,7 +39,7 @@ Wärend der nun folgenden <zeit> Sekunden wird euch angezeigt wenn euer Programm
 eine Lösung einreicht und eine Bewertung dieser Lösung im Vergleich zum
 bisherigen Bestwert.
 
-*** Validitätsprüfung
+** Validitätsprüfung
 
 #+BEGIN_SRC shell
 brahmin_runner validate <problem>
@@ -55,7 +56,7 @@ sein. Sollte also eine Lösung von euch nicht angenommen werden, die eurer
 Meinung nach korrekt wäre, dann bitte eine Meldung an mich. Allerdings werde ich
 aus Fairness ab dem Monatswechsel am Parsing nur noch in Notfällen etwas ändern.
 
-* Footnotes
+* Fußnoten
 
 [fn:1] Unter Umständen werdet ihr =rebar3= selbst kompilieren müssen, damit es
 zu eurer Erlang Version passt.
