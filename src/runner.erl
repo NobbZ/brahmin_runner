@@ -34,7 +34,6 @@ run(Problem, Parsed, Time) ->
 init({Problem, Parsed, Time}) ->
     gen_fsm:send_event_after(1000, {countdown, 5}),
     Make = os:find_executable("make"),
-    io:format("~p~n", [Make]),
     Port = open_port({spawn_executable, Make}, [{args, [<<"run">>]},
                                                 exit_status]),
     {ok, warm_up, #state_data{problem  = Problem,
@@ -146,7 +145,6 @@ running(start, SD) ->
     port_command(SD#state_data.port, SD#state_data.problem),
     {next_state, running, SD};
 running(time_is_over, SD) ->
-    io:format("Closing port!~n"),
     port_close(SD#state_data.port),
     case SD#state_data.performers of
         [] -> {stop, ok, SD};

@@ -46,12 +46,10 @@ main([TimeStr, ProblemName]) ->
                     end,
     %Runner = spawn(runner, run, [Problem, ParsedProblem, Time]),
     {ok, Runner} = runner:run(Problem, ParsedProblem, Time),
-    io:format("~p~n", [Runner]),
     erlang:monitor(process, Runner),
-    io:format("~p~n", [Runner]),
-    %observer:start(),
-    %timer:sleep(5000),
     receive
+        {'DOWN', _, process, Runner, ok} ->
+            io:format("Bye!~n");
         {'DOWN', _, process, Runner, Reason} ->
             io:format("~p~n", [Reason])
     end,
