@@ -16,7 +16,8 @@
           port     :: port(),
           received :: non_neg_integer(),
           max      :: integer() | undefined,
-          max_id   :: non_neg_integer() | undefined
+          max_id   :: non_neg_integer() | undefined,
+          performers :: ordsets:ordset(pid())
          }).
 -type(state_data() :: #state_data{}).
 -type(state_name() :: warmup | running).
@@ -40,7 +41,8 @@ init({Problem, Parsed, Time}) ->
                               parsed   = Parsed,
                               runtime  = Time * 1000,
                               port     = Port,
-                              received = 0}}.
+                              received = 0,
+                              performers = ordsets:new()}}.
 
 -spec handle_info({port(), any()}, state_name(), state_data())
                  -> {next_state | stop, state_name(), state_data()}.
@@ -48,8 +50,12 @@ handle_info({Port, {data, Line}}, running, SD = #state_data{port = Port}) ->
     Current = SD#state_data.received,
     io:format("Erhalte Loesungsvorschlag #~b: ~s", [Current,
                                                       color:green(Line)]),
-    spawn(?MODULE, perform_solution, [Line, SD#state_data.parsed, Current]),
-    {next_state, running, SD#state_data{received = Current + 1}};
+    NewPerformers = ordsets:add_element(
+                      spawn(?MODULE, perform_solution,
+                            [Line, SD#state_data.parsed, Current]),
+                      SD#state_data.performers),
+    {next_state, running, SD#state_data{received = Current + 1,
+                                        performers = NewPerformers}};
 handle_info({Port, {data, Line}}, warm_up, SD = #state_data{port = Port}) ->
     io:format("~s~n", [color:yellow(Line)]),
     {next_state, warm_up, SD};
@@ -74,15 +80,15 @@ handle_info(Info, StateName, StateData) ->
 
 -spec handle_event(any(), state_name(), state_data())
                   -> {stop, tuple(), state_data()}.
-handle_event({error, ID}, StateName, SD) when
+handle_event({error, ID, PerfID}, StateName, SD) when
       (StateName == running) or (StateName == collecting) ->
     io:format("--> Nicht parsebare Lösung #~b~n", [ID]),
-    {next_state, StateName, SD};
-handle_event({invalid, ID}, StateName, SD) when
+    proceed_or_stop(StateName, SD, PerfID);
+handle_event({invalid, ID, PerfID}, StateName, SD) when
       (StateName == running) or (StateName == collecting) ->
     io:format("--> Ungueltiger Loesungsvorschlag #~b <--~n", [ID]),
-    {next_state, StateName, SD};
-handle_event({valid, ID, Score}, StateName, SD) when
+    proceed_or_stop(StateName, SD, PerfID);
+handle_event({valid, ID, Score, PerfID}, StateName, SD) when
       (StateName == running) or (StateName == collecting) ->
     NewMax = get_max(Score, SD#state_data.max),
     NewMaxID = case get_max(ID, SD#state_data.max_id) of
@@ -98,8 +104,8 @@ handle_event({valid, ID, Score}, StateName, SD) when
                                  "~n", [ID, Score]),
                        NID
                end,
-    {next_state, StateName, SD#state_data{max = NewMax,
-                                          max_id = NewMaxID}};
+    proceed_or_stop(StateName, SD#state_data{max = NewMax,
+                                             max_id = NewMaxID}, PerfID);
 handle_event(Event, StateName, SD) ->
     {stop, {unknown_event, Event, StateName}, SD}.
 
@@ -142,7 +148,10 @@ running(start, SD) ->
 running(time_is_over, SD) ->
     io:format("Closing port!~n"),
     port_close(SD#state_data.port),
-    {next_state, collecting, SD}.
+    case SD#state_data.performers of
+        [] -> {stop, ok, SD};
+        _  -> {next_state, collecting, SD}
+    end.
 
 get_max(Score, undefined) -> Score;
 get_max(Score, OldMax) when Score > OldMax -> Score;
@@ -157,13 +166,20 @@ perform_solution(InputLine, Problem, ID) ->
         {ok, SolutionParsed} ->
             case solution:evaluate(SolutionParsed, Problem) of
                 Score when is_integer(Score) ->
-                    gen_fsm:send_all_state_event(?MODULE, {valid, ID, Score});
+                    gen_fsm:send_all_state_event(?MODULE, {valid, ID, Score, self()});
                 error ->
-                    gen_fsm:send_all_state_event(?MODULE, {invalid, ID})
+                    gen_fsm:send_all_state_event(?MODULE, {invalid, ID, self()})
             end;
         _ ->
-            gen_fsm:send_all_state_event(?MODULE, {error, ID})
+            gen_fsm:send_all_state_event(?MODULE, {error, ID, self()})
     end.
+
+proceed_or_stop(collecting, SD = #state_data{performers = [PerfID]}, PerfID) ->
+    {stop, ok, SD};
+proceed_or_stop(StateName, SD, PerfID) ->
+    NewPerformers = ordsets:del_element(PerfID, SD#state_data.performers),
+    {next_state, StateName, SD#state_data{performers = NewPerformers}}.
+
 
 %% Local Variables:
 %% flycheck-erlang-include-path: ("../include")
