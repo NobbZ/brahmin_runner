@@ -164,7 +164,8 @@ perform_solution(InputLine, Problem, ID) ->
         {ok, SolutionParsed} ->
             case solution:evaluate(SolutionParsed, Problem) of
                 Score when is_integer(Score) ->
-                    gen_fsm:send_all_state_event(?MODULE, {valid, ID, Score, self()});
+                    gen_fsm:send_all_state_event(?MODULE,
+                                                 {valid, ID, Score, self()});
                 error ->
                     gen_fsm:send_all_state_event(?MODULE, {invalid, ID, self()})
             end;
