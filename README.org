@@ -9,7 +9,7 @@ mitgeliefert. Diese befinden sich im Unterordner ~problems~.
 
 * Vorraussetzungen
 
-- Es wird eine [[http://www.erlang.org/][Erlang Umgebung]] benötigt, mindestens in Version =16B3= benötigt.
+- Es wird eine [[http://www.erlang.org/][Erlang Umgebung]] benötigt, mindestens in Version =16B3=.
 - Für das kompilieren wird ausserdem [[http://www.rebar3.org/][=rebar3=]] benötigt.[fn:1]
 
 * Kompilieren
