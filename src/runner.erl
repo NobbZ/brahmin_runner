@@ -50,26 +50,6 @@ handle_info({Port, {data, Line}}, running, SD = #state_data{port = Port}) ->
                                                       color:green(Line)]),
     spawn(?MODULE, perform_solution, [Line, SD#state_data.parsed, Current]),
     {next_state, running, SD#state_data{received = Current + 1}};
-    %% case solution:check(Line) of
-    %%     {ok, SolutionParsed} ->
-    %%         case solution:evaluate(SolutionParsed, SD#state_data.parsed) of
-    %%             error ->
-    %%                 io:format("--> Ungültiger Lösungsvorschlag #~b <--~n" ,
-    %%                           [Current]),
-    %%                 {next_state, running,
-    %%                  SD#state_data{received = Current + 1}};
-    %%             Score when is_integer(Score) ->
-    %%                 NewMax = get_max(Score, SD#state_data.max),
-    %%                 io:format("--> Loesungsvorschlag #~b wurde mit ~b Punkten"
-    %%                           " bewertet (bisherige Bestleistung ~s)~n",
-    %%                           [Current, Score, SD#state_data.max]),
-    %%                 {next_state, running, SD#state_data{received = Current + 1,
-    %%                                                     max = NewMax}}
-    %%         end;
-    %%     _ ->
-    %%         io:format("--> Nicht parsebar!! ~b <--", [Current]),
-    %%         {next_state, running, SD#state_data{received = Current + 1}}
-    %% end;
 handle_info({Port, {data, Line}}, warm_up, SD = #state_data{port = Port}) ->
     io:format("~s~n", [color:yellow(Line)]),
     {next_state, warm_up, SD};
