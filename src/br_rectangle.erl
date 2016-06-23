@@ -29,11 +29,22 @@ new_ref(ID, X, Y) ->
 -spec get_id(ref()) -> non_neg_integer().
 get_id(#rec_ref{id = ID}) -> ID.
 
+-spec get_x(ref()) -> non_neg_integer().
 get_x(#rec_ref{x = X}) -> X.
+
+-spec get_y(ref()) -> non_neg_integer().
 get_y(#rec_ref{y = Y}) -> Y.
+
+-spec get_width(rectangle()) -> non_neg_integer().
 get_width(#rectangle{width = W}) -> W.
+
+-spec get_height(rectangle()) -> non_neg_integer().
 get_height(#rectangle{height = H}) -> H.
+
+-spec get_value(rectangle()) -> non_neg_integer().
 get_value(#rectangle{value = V}) -> V.
+
+-spec get_size(rectangle()) -> non_neg_integer().
 get_size(#rectangle{width = W, height = H}) -> W * H.
 
 -spec fill_context(list(ref()), list(rectangle()))
