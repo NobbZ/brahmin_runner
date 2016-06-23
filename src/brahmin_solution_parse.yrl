@@ -33,6 +33,8 @@ Erlang code.
 
 extract({_Token, _Pos, Value}) -> Value.
 
+-spec parse_string(string() | binary()) -> {ok, solution:solution()} |
+                                           {error, non_neg_integer(), string()}.
 parse_string(String) when is_binary(String) ->
     parse_string(binary_to_list(String));
 parse_string(String) when is_list(String) ->
