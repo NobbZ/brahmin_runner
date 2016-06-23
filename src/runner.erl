@@ -4,7 +4,7 @@
 
 -behaviour(gen_fsm).
 -export([init/1, handle_info/3, handle_event/3, handle_sync_event/4,
-         code_change/4, terminate/3]).
+         code_change/4, terminate/3, perform_solution/3]).
 
 -ignore_xref([warm_up/2, running/2]).
 -export([warm_up/2, running/2]).
@@ -47,26 +47,28 @@ handle_info({Port, {data, Line}}, running, SD = #state_data{port = Port}) ->
     Current = SD#state_data.received,
     io:format("Erhalte Loesungsvorschlag #~b: ~s", [Current,
                                                       color:green(Line)]),
-    case solution:check(Line) of
-        {ok, SolutionParsed} ->
-            case solution:evaluate(SolutionParsed, SD#state_data.parsed) of
-                error ->
-                    io:format("--> Ungültiger Lösungsvorschlag #~b <--~n" ,
-                              [Current]),
-                    {next_state, running,
-                     SD#state_data{received = Current + 1}};
-                Score when is_integer(Score) ->
-                    NewMax = get_max(Score, SD#state_data.max),
-                    io:format("--> Loesungsvorschlag #~b wurde mit ~b Punkten"
-                              " bewertet (bisherige Bestleistung ~s)~n",
-                              [Current, Score, SD#state_data.max]),
-                    {next_state, running, SD#state_data{received = Current + 1,
-                                                        max = NewMax}}
-            end;
-        _ ->
-            io:format("--> Nicht parsebar!! ~b <--", [Current]),
-            {next_state, running, SD#state_data{received = Current + 1}}
-    end;
+    spawn(?MODULE, perform_solution, [Line, SD#state_data.parsed, Current]),
+    {next_state, running, SD#state_data{received = Current + 1}};
+    %% case solution:check(Line) of
+    %%     {ok, SolutionParsed} ->
+    %%         case solution:evaluate(SolutionParsed, SD#state_data.parsed) of
+    %%             error ->
+    %%                 io:format("--> Ungültiger Lösungsvorschlag #~b <--~n" ,
+    %%                           [Current]),
+    %%                 {next_state, running,
+    %%                  SD#state_data{received = Current + 1}};
+    %%             Score when is_integer(Score) ->
+    %%                 NewMax = get_max(Score, SD#state_data.max),
+    %%                 io:format("--> Loesungsvorschlag #~b wurde mit ~b Punkten"
+    %%                           " bewertet (bisherige Bestleistung ~s)~n",
+    %%                           [Current, Score, SD#state_data.max]),
+    %%                 {next_state, running, SD#state_data{received = Current + 1,
+    %%                                                     max = NewMax}}
+    %%         end;
+    %%     _ ->
+    %%         io:format("--> Nicht parsebar!! ~b <--", [Current]),
+    %%         {next_state, running, SD#state_data{received = Current + 1}}
+    %% end;
 handle_info({Port, {data, Line}}, warm_up, SD = #state_data{port = Port}) ->
     io:format("~s~n", [color:yellow(Line)]),
     {next_state, warm_up, SD};
@@ -138,6 +140,20 @@ running(time_is_over, SD) ->
 get_max(Score, undefined) -> Score;
 get_max(Score, OldMax) when Score > OldMax -> Score;
 get_max(_, OldMax) -> OldMax.
+
+perform_solution(InputLine, Problem, ID) ->
+    io:format("Performing solution ~p", [ID]),
+    case solution:check(InputLine) of
+        {ok, SolutionParsed} ->
+            case solution:evaluate(SolutionParsed, Problem) of
+                Score when is_integer(Score) ->
+                    gen_fsm:send_all_state_event(?MODULE, {valid, ID, Score});
+                error ->
+                    gen_fsm:send_all_state_event(?MODULE, {invalid, ID})
+            end;
+        _ ->
+            gen_fsm:send_all_state_event(?MODULE, {error, ID})
+    end.
 
 %% Local Variables:
 %% flycheck-erlang-include-path: ("../include")
