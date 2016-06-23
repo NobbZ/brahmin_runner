@@ -15,7 +15,8 @@
           runtime  :: pos_integer(),
           port     :: port(),
           received :: non_neg_integer(),
-          max      :: integer() | undefined
+          max      :: integer() | undefined,
+          max_id   :: non_neg_integer() | undefined
          }).
 -type(state_data() :: #state_data{}).
 -type(state_name() :: warmup | running).
@@ -93,6 +94,32 @@ handle_info(Info, StateName, StateData) ->
 
 -spec handle_event(any(), state_name(), state_data())
                   -> {stop, tuple(), state_data()}.
+handle_event({error, ID}, StateName, SD) when
+      (StateName == running) or (StateName == collecting) ->
+    io:format("--> Nicht parsebare Lösung #~b~n", [ID]),
+    {next_state, StateName, SD};
+handle_event({invalid, ID}, StateName, SD) when
+      (StateName == running) or (StateName == collecting) ->
+    io:format("--> Ungueltiger Loesungsvorschlag #~b <--~n", [ID]),
+    {next_state, StateName, SD};
+handle_event({valid, ID, Score}, StateName, SD) when
+      (StateName == running) or (StateName == collecting) ->
+    NewMax = get_max(Score, SD#state_data.max),
+    NewMaxID = case get_max(ID, SD#state_data.max_id) of
+                   NID when (NID == ID) and (NewMax == Score) ->
+                       io:format("--> Loesungsvorschlag #~b wurde mit ~b"
+                                 " Punkten bewertet (bisherige Bestleistung ~s)"
+                                 "~n", [ID, Score, SD#state_data.max]),
+                       ID;
+                   NID ->
+                       io:format("--> Loesungsvorschlag #~b wurde mit ~b"
+                                 " Punkten bewertet (eine neuere Einsendung war"
+                                 " bereits besser und wurde vorher ausgewertet)"
+                                 "~n", [ID, Score]),
+                       NID
+               end,
+    {next_state, StateName, SD#state_data{max = NewMax,
+                                          max_id = NewMaxID}};
 handle_event(Event, StateName, SD) ->
     {stop, {unknown_event, Event, StateName}, SD}.
 
@@ -141,8 +168,11 @@ get_max(Score, undefined) -> Score;
 get_max(Score, OldMax) when Score > OldMax -> Score;
 get_max(_, OldMax) -> OldMax.
 
+-spec perform_solution(string() | binary(),
+                       problem:problem(),
+                       non_neg_integer())
+                      -> no_return().
 perform_solution(InputLine, Problem, ID) ->
-    io:format("Performing solution ~p", [ID]),
     case solution:check(InputLine) of
         {ok, SolutionParsed} ->
             case solution:evaluate(SolutionParsed, Problem) of
