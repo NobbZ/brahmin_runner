@@ -22,8 +22,5 @@ get_area(#bag{width = W, height = H}) -> W * H.
                           Width :: non_neg_integer(),
                           Height :: non_neg_integer()})
                  -> boolean().
-can_sonsume(#bag{width = BW, height = BH}, {X, Y, W, H}) when
-      X + W =< BW, Y + H =< BH ->
-    true;
-can_sonsume(#bag{}, {_, _, _, _}) ->
-    false.
+can_sonsume(#bag{width = BW, height = BH}, {X, Y, W, H}) ->
+    (X + W =< BW) and (Y + H =< BH).
