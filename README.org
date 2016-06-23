@@ -19,6 +19,15 @@ rebar3 escriptize # Es werden Abhängigkeiten heruntergeladen und kompiliert
 cp _build/default/bin/brahmin_runner $euer_projekt_pfad
 #+END_SRC
 
+Wenn ihr unbedingt das Makefile nutzen wollt, dann ruft es bitte auf wie folgt:
+
+#+BEGIN_SRC shell
+make brahmin_runner
+#+END_SRC
+
+Das Target ~all~ würde noch zusätzliche Tests, Typüberprüfungen und Code-Linting
+vornehmen. Gerade der initiale Typcheck kann /mehrere/ Minuten dauern.
+
 * Benutzen
 
 Im Moment gibt es zwei Modi der Nutzung.
@@ -55,6 +64,16 @@ dem gleichen Code wie im Wettbewerb auch, ebenfalls der Parser wird der gleiche
 sein. Sollte also eine Lösung von euch nicht angenommen werden, die eurer
 Meinung nach korrekt wäre, dann bitte eine Meldung an mich. Allerdings werde ich
 aus Fairness ab dem Monatswechsel am Parsing nur noch in Notfällen etwas ändern.
+
+
+* Verbesserungen
+
+In gewissem Rahmen sind auch durchaus Verbesserungsvorschläge eurerseits
+erlaubt. Benutzt dazu gerne den [[https://github.com/NobbZ/brahmin_runner/issues][GitHub Issuetracker]] oder setzt direkt einen
+[[https://github.com/NobbZ/brahmin_runner/pulls][PullRequest]] ab.
+
+Der Code wird automatisch auf [[https://travis-ci.org/NobbZ/brahmin_runner][travis]] getestet und ich bitte euch darauf zu
+achten, nur Features zu nutzen die in Erlang 16B3 vorhanden sind.
 
 * Fußnoten
 
