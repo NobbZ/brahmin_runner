@@ -47,7 +47,7 @@ init({Problem, Parsed, Time}) ->
                  -> {next_state | stop, state_name(), state_data()}.
 handle_info({Port, {data, Line}}, running, SD = #state_data{port = Port}) ->
     Current = SD#state_data.received,
-    io:format("Erhalte Loesungsvorschlag #~b: ~s", [Current,
+    io:format("Erhalte Loesungsvorschlag #~b: ~w", [Current,
                                                       color:green(Line)]),
     NewPerformers = ordsets:add_element(
                       spawn(?MODULE, perform_solution,
@@ -93,7 +93,7 @@ handle_event({valid, ID, Score, PerfID}, StateName, SD) when
     NewMaxID = case get_max(ID, SD#state_data.max_id) of
                    NID when (NID == ID) and (NewMax == Score) ->
                        io:format("--> Loesungsvorschlag #~b wurde mit ~b"
-                                 " Punkten bewertet (bisherige Bestleistung ~s)"
+                                 " Punkten bewertet (bisherige Bestleistung ~w)"
                                  "~n", [ID, Score, SD#state_data.max]),
                        ID;
                    NID ->
