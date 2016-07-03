@@ -47,8 +47,8 @@ init({Problem, Parsed, Time}) ->
                  -> {next_state | stop, state_name(), state_data()}.
 handle_info({Port, {data, Line}}, running, SD = #state_data{port = Port}) ->
     Current = SD#state_data.received,
-    io:format("Erhalte Loesungsvorschlag #~b: ~w", [Current,
-                                                      color:green(Line)]),
+    io:format("Erhalte Loesungsvorschlag #~b: ~s", [Current,
+                                                    color:green(Line)]),
     NewPerformers = ordsets:add_element(
                       spawn(?MODULE, perform_solution,
                             [Line, SD#state_data.parsed, Current]),
