@@ -34,7 +34,8 @@ run(Problem, Parsed, Time) ->
 init({Problem, Parsed, Time}) ->
     gen_fsm:send_event_after(1000, {countdown, 5}),
     Make = os:find_executable("make"),
-    Cmd = lists:concat(["bash -c '(cat && kill -9 0) | (", Make, " run; kill 0)'"]),
+    Cmd = lists:concat(["bash -c '(cat && kill -9 0) | (",
+                        Make, " run; kill 0)'"]),
     Port = open_port({spawn, Cmd}, [exit_status, {line, 5000000}]),
     {ok, warm_up, #state_data{problem  = Problem,
                               parsed   = Parsed,
@@ -45,7 +46,9 @@ init({Problem, Parsed, Time}) ->
 
 -spec handle_info({port(), any()}, state_name(), state_data())
                  -> {next_state | stop, state_name(), state_data()}.
-handle_info({Port, {data, {eol, Line}}}, running, SD = #state_data{port = Port}) ->
+handle_info({Port, {data, {eol, Line}}},
+            running,
+            SD = #state_data{port = Port}) ->
     Current = SD#state_data.received,
     io:format("Erhalte Loesungsvorschlag #~b: ~s~n", [Current,
                                                     color:green(Line)]),
