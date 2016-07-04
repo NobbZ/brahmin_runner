@@ -51,14 +51,14 @@ handle_info({Port, {data, {eol, Line}}},
             SD = #state_data{port = Port}) ->
     Current = SD#state_data.received,
     io:format("Erhalte Loesungsvorschlag #~b: ~s~n", [Current,
-                                                    color:green(Line)]),
+                                                      color:green(Line)]),
     NewPerformers = ordsets:add_element(
                       spawn(?MODULE, perform_solution,
                             [Line ++ "\n", SD#state_data.parsed, Current]),
                       SD#state_data.performers),
     {next_state, running, SD#state_data{received = Current + 1,
                                         performers = NewPerformers}};
-handle_info({Port, {data, Line}}, warm_up, SD = #state_data{port = Port}) ->
+handle_info({Port, {data, {eol, Line}}}, warm_up, SD = #state_data{port = Port}) ->
     io:format("~s~n", [color:yellow(Line)]),
     {next_state, warm_up, SD};
 handle_info({Port, {exit_status, 0}}, warm_up, SD = #state_data{port = Port}) ->
