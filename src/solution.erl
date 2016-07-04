@@ -43,7 +43,8 @@ evaluate(Solution, Problem) ->
     ValidatedTimeAndSpace =
         case FillContext of
             [_|_] -> go_to_tardis(FillContext,
-                                  br_exercise:get_bags(Problem));
+                                  br_exercise:get_bags(Problem),
+                                  ordsets:new());
             false -> false
         end,
     case ValidatedTimeAndSpace of
@@ -76,9 +77,9 @@ sort_by_ref(List) ->
       end,
       List).
 
-go_to_tardis([], _) -> true;
-go_to_tardis([[]|CT], [_|BT])-> go_to_tardis(CT, BT);
-go_to_tardis([[{Ref, Rect}|Others]|CT], [Bag|BT]) ->
+go_to_tardis([], _, _) -> true;
+go_to_tardis([[]|CT], [_|BT], Used)-> go_to_tardis(CT, BT, Used);
+go_to_tardis([[{Ref, Rect}|Others]|CT], [Bag|BT], Used) ->
     Fits = br_bag:can_sonsume(Bag, {br_rectangle:get_x(Ref),
                                     br_rectangle:get_y(Ref),
                                     br_rectangle:get_width(Rect),
@@ -87,7 +88,11 @@ go_to_tardis([[{Ref, Rect}|Others]|CT], [Bag|BT]) ->
         lists:all(fun (R) ->
                           not br_rectangle:overlap({Ref, Rect}, R)
                   end, Others),
-    Fits and NoOverlaps andalso go_to_tardis([Others|CT], [Bag|BT]).
+    NotUsed = not ordsets:is_element(br_rectangle:get_id(Ref), Used),
+    Fits and NoOverlaps and NotUsed
+        andalso go_to_tardis([Others|CT], [Bag|BT], ordsets:add_element(
+                                                      br_rectangle:get_id(Ref),
+                                                      Used)).
 
 sum_up_context([], Acc) -> Acc;
 sum_up_context([[]|T], Acc) -> sum_up_context(T, Acc);
